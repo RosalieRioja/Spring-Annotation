@@ -4,159 +4,152 @@ import com.model.*;
 import com.service.*;
 import com.util.*;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 
 import org.springframework.web.servlet.*;
-import org.springframework.web.servlet.mvc.*;
+//import org.springframework.web.servlet.mvc.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 import java.text.*;
 import java.text.DateFormat;
 
-public class ContactController implements Controller{
-
-    private final int DEFAULT_PATH_COUNT = 9;   // "/Contact/"
+@Controller
+public class ContactController {
 
     private PersonCRUD personCRUD;
 
-    public ContactController(PersonCRUD personCRUD_param) {
-        personCRUD = personCRUD_param;
+    public ContactController(PersonCRUD personCRUDParam) {
+        personCRUD = personCRUDParam;
     }
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String url = request.getRequestURI();
-        System.out.println("url = " + url);
+    @RequestMapping("/Contact/list")
+    public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String personId = request.getParameter("personId");
 
-        String page = url.substring(DEFAULT_PATH_COUNT, url.length());
+        ModelAndView model = new ModelAndView("ListContact");
+        if(personId == null) {
+            personId = String.valueOf(request.getSession().getAttribute("personId"));
+        }
+        PersonDTO lstContact = personCRUD.get(Integer.parseInt(personId));
+        model.addObject("person", lstContact);
 
-        ModelAndView model = new ModelAndView();
-        String personId_reqparam = request.getParameter("personId");
+        return model;
+    }
+
+    @RequestMapping("/Contact/add")
+    public ModelAndView add(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView model = new ModelAndView("AddContact");
+        model.addObject("personId", request.getParameter("personId"));
+
+        return model;
+    }
+
+    @RequestMapping("/Contact/edit")
+    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView model = new ModelAndView("AddContact");
+
         int contactId;
         ContactsDTO contact;
-
-        switch(page) {
-            case "list" :
-                System.out.println("personId on session = " + request.getSession().getAttribute("personId"));
-
-                if(personId_reqparam == null) {
-                    personId_reqparam = String.valueOf(request.getSession().getAttribute("personId"));
-                }
-                PersonDTO lstContact = personCRUD.get(Integer.parseInt(personId_reqparam));
-                model.setViewName("ListContact");
-                model.addObject("person", lstContact);
+        PersonDTO editPerson = personCRUD.get(Integer.parseInt(request.getParameter("personId")));
+        contact = new ContactsDTO();
+        contactId = Integer.parseInt(request.getParameter("editId"));
+        for(ContactsDTO getContact : editPerson.getContacts()) {
+            if(getContact.getId() == contactId) {
+                contact = getContact;
                 break;
+            }
+        }
+        model.addObject("personId", editPerson.getId());
+        model.addObject("contact", contact);
 
-            case "add" :
-                model.addObject("personId", personId_reqparam);
-                model.setViewName("AddContact");
+        return model;
+    }
+
+    @RequestMapping("/Contact/delete")
+    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView model = new ModelAndView("redirect:/Contact/list");
+
+        int contactId;
+        ContactsDTO contact;
+        PersonDTO personDelete = personCRUD.get(Integer.parseInt(request.getParameter("personId")));
+        contactId = Integer.parseInt(request.getParameter("deleteId"));
+        for(ContactsDTO contactDelete : personDelete.getContacts()) {
+            if(contactDelete.getId() == contactId) {
+                personDelete.getContacts().remove(contactDelete);
                 break;
+            }
+        }
+        personCRUD.update(personDelete);
 
-            case "edit" :
-                System.out.println("personId = " + personId_reqparam + " editId = " + request.getParameter("editId"));
+        request.getSession().setAttribute("personId", request.getParameter("personId"));
 
-                PersonDTO editPerson = personCRUD.get(Integer.parseInt(personId_reqparam));
-                contact = new ContactsDTO();
-                contactId = Integer.parseInt(request.getParameter("editId"));
-                for(ContactsDTO getContact : editPerson.getContacts()) {
+        return model;
+    }
+
+    @RequestMapping("/Contact/submit")
+    public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView model = new ModelAndView("redirect:/Contact/list");
+
+        int contactId;
+        ContactsDTO contact;
+        PersonDTO person = new PersonDTO();
+        Set<ContactsDTO> personContacts;
+        contact = new ContactsDTO();
+        DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+
+        try{
+            person = personCRUD.get(Integer.parseInt(request.getParameter("personId")));
+            personContacts = person.getContacts();
+            
+            if(!request.getParameter("contactId").equals("") && request.getParameter("contactId") != null) {
+                contactId = Integer.parseInt(request.getParameter("contactId"));
+
+                System.out.println("edit contact " + contactId);
+
+                for(ContactsDTO getContact : personContacts) {
                     if(getContact.getId() == contactId) {
                         contact = getContact;
                         break;
                     }
                 }
+            }//edit
+            else {
+                System.out.println("add contact");
 
-                model.addObject("personId", editPerson.getId());
-                model.addObject("contact", contact);
-                model.setViewName("AddContact");
-                break;
-
-            case "delete" :
-                System.out.println("personId = " + personId_reqparam + " deleteId = " + request.getParameter("deleteId"));
-
-                PersonDTO personDelete = personCRUD.get(Integer.parseInt(personId_reqparam));
-                contactId = Integer.parseInt(request.getParameter("deleteId"));
-                for(ContactsDTO contactDelete : personDelete.getContacts()) {
-                    if(contactDelete.getId() == contactId) {
-                        personDelete.getContacts().remove(contactDelete);
-                        break;
-                    }
-                }
-                personCRUD.update(personDelete);
-            
-                model.setViewName("redirect:/Contact/list");
-                //model.addObject("personId", personId_reqparam);
-
-                request.getSession().setAttribute("personId", personId_reqparam);
-                break;
-
-            case "submit" :
-                PersonDTO person = new PersonDTO();
-                Set<ContactsDTO> personContacts;
-                contact = new ContactsDTO();
-                DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
-
-                try{
-                    person = personCRUD.get(Integer.parseInt(personId_reqparam));
+                if(personContacts == null) {
+                    personContacts = new HashSet<ContactsDTO>();
+                    person.setContacts(personContacts);
                     personContacts = person.getContacts();
-                    
-                    if(!request.getParameter("contactId").equals("") && request.getParameter("contactId") != null) {
-                        contactId = Integer.parseInt(request.getParameter("contactId"));
-
-                        System.out.println("edit contact " + contactId);
-
-                        for(ContactsDTO getContact : personContacts) {
-                            if(getContact.getId() == contactId) {
-                                contact = getContact;
-                                break;
-                            }
-                        }
-                    }//edit
-                    else {
-                        System.out.println("add contact");
-
-                        if(personContacts == null) {
-                            personContacts = new HashSet<ContactsDTO>();
-                            person.setContacts(personContacts);
-                            personContacts = person.getContacts();
-                        }
-                        contact = new ContactsDTO();
-                    }//add new
-
-                    switch(request.getParameter("type")) {
-                        case "LANDLINE" :
-                            contact.setType(ContactType.LANDLINE);
-                            break;
-                        case "MOBILE" :
-                            contact.setType(ContactType.MOBILE);
-                            break;
-                        case "EMAIL" :
-                            contact.setType(ContactType.EMAIL);
-                            break;
-                    }
-
-                    contact.setValue(request.getParameter("value"));
-
-                    personContacts.add(contact);
-                    personCRUD.update(person);
                 }
-                catch(IllegalArgumentException | NullPointerException ex) {
-                    System.out.println("add/edit contact Exception");
-                    ex.printStackTrace();
-                }
+                contact = new ContactsDTO();
+            }//add new
 
-                model.setViewName("redirect:/Contact/list");
-                //model.addObject("personId", personId_reqparam);
+            switch(request.getParameter("type")) {
+                case "LANDLINE" :
+                    contact.setType(ContactType.LANDLINE);
+                    break;
+                case "MOBILE" :
+                    contact.setType(ContactType.MOBILE);
+                    break;
+                case "EMAIL" :
+                    contact.setType(ContactType.EMAIL);
+                    break;
+            }
 
-                request.getSession().setAttribute("personId", personId_reqparam);
-                break;
+            contact.setValue(request.getParameter("value"));
 
-            default :
-                break;
+            personContacts.add(contact);
+            personCRUD.update(person);
         }
+        catch(IllegalArgumentException | NullPointerException ex) {
+            System.out.println("add/edit contact Exception");
+            ex.printStackTrace();
+        }
+
+        request.getSession().setAttribute("personId", request.getParameter("personId"));
 
         return model;
     }

@@ -80,23 +80,4 @@ public class PersonCRUD implements CRUD<PersonDTO> {
 		return convertModelDTO.setModelToDTO(personDao.getPerson(id_param));
 	}
 
-	//================================================================
-
-	public Roles getRole(int id_param) {
-		return personDao.getRole(id_param);
-	}
-
-	public List<Roles> readRoles() {
-		List<Roles> lstRoles = personDao.listRoles();
-
-		if(lstRoles != null) { 
-			//System.out.println("Record has been successfully added!\n");
-		}
-		else {
-			System.out.println("There are no roles.");
-		}
-
-		return lstRoles;
-	}
-
 }

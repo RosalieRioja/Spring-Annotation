@@ -37,7 +37,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
     </dependency>
-
+    
   </dependencies>
 
   <build>
@@ -54,13 +54,13 @@
         <configuration>
           <descriptor>src/main/webapp/WEB-INF/web.xml</descriptor>
           <war>target/app-{project.version}.war</war>
-        <webAppSourceDirectory>src/main/webapp</webAppSourceDirectory>
-        <webApp>
-          <contextPath>/</contextPath>
-          <descriptor>src/main/webapp/WEB-INF/web.xml</descriptor>
-        </webApp>
-        <classesDirectory>target/app-${project.version}-jar-with-dependencies.jar</classesDirectory>
-        </configuration>
+          <webAppSourceDirectory>src/main/webapp</webAppSourceDirectory>
+          <webApp>
+            <contextPath>/</contextPath>
+            <descriptor>src/main/webapp/WEB-INF/web.xml</descriptor>
+          </webApp>
+          <classesDirectory>target/app-${project.version}-jar-with-dependencies.jar</classesDirectory>
+          </configuration>
       </plugin>
       
     </plugins>
