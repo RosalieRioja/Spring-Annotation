@@ -39,17 +39,11 @@
         <groupId>org.hibernate.javax.persistence</groupId>
         <artifactId>hibernate-jpa-2.1-api</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>hibernate-annotations</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-    </dependency>
 
     <dependency>
-      <groupId>hibernate-commons-annotations</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
     </dependency>
--->
   </dependencies>
 
 </project>

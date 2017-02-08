@@ -1,6 +1,6 @@
-package com.util;
+package com.service;
 
-import java.util.*;
+import java.util.List;
 
 public interface CRUD<T> {
 

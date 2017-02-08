@@ -1,15 +1,18 @@
 package com.dao;
 
+import com.model.*;
+
 import java.util.*;
 import javax.persistence.*;
-//import javax.persistence.criteria.JoinType;
 
 import org.hibernate.*;
 import org.hibernate.cfg.*;
 import org.hibernate.criterion.*;
 
-import com.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class PersonDao {
 
 	private static SessionFactory factory;
@@ -87,12 +90,8 @@ public class PersonDao {
 
 		try {
 			tx = session.beginTransaction();
-			cr = session.createCriteria(Person.class, "person");//, JoinType.INNER);//, "person");//, CriteriaSpecification.INNER_JOIN);
-			//cr.createAlias("roles", "roles");
-			//cr.setFetchMode("person.roles", FetchMode.JOIN);
-        	//cr.setResultTransformer(CriteriaSpecification.INNER_JOIN);
-			//cr.createAlias("roles", "role");
-			//cr.add(Restrictions.eq("roles.id", "person.id"));
+			cr = session.createCriteria(Person.class, "person");
+			
 			if(sort == "asc") {
 				cr.addOrder(Order.asc("GWA"));
 			}

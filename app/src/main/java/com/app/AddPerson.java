@@ -11,6 +11,7 @@ import org.springframework.web.servlet.*;
 //import org.springframework.web.servlet.mvc.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.text.*;
@@ -19,12 +20,13 @@ import java.text.DateFormat;
 @Controller
 public class AddPerson {
 
-    private PersonCRUD personCRUD;
+    private CRUD<PersonDTO> personCRUD;
 
-    public AddPerson(PersonCRUD personCRUDParam) {
+    @Autowired
+    public AddPerson(CRUD<PersonDTO> personCRUDParam) {
         personCRUD = personCRUDParam;
     }
-
+    
     @RequestMapping("/Person/list")
     public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
 

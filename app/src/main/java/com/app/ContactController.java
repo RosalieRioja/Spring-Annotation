@@ -11,6 +11,7 @@ import org.springframework.web.servlet.*;
 //import org.springframework.web.servlet.mvc.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.text.*;
@@ -19,9 +20,10 @@ import java.text.DateFormat;
 @Controller
 public class ContactController {
 
-    private PersonCRUD personCRUD;
+    private CRUD<PersonDTO> personCRUD;
 
-    public ContactController(PersonCRUD personCRUDParam) {
+    @Autowired
+    public ContactController(CRUD<PersonDTO> personCRUDParam) {
         personCRUD = personCRUDParam;
     }
 

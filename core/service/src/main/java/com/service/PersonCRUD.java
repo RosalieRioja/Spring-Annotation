@@ -6,13 +6,19 @@ import com.util.*;
 
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+//impl
+@Service
 public class PersonCRUD implements CRUD<PersonDTO> {
 
+	@Autowired
 	private PersonDao personDao;
 	private ConvertModelDTO convertModelDTO;
 
 	public PersonCRUD() {
-		personDao = new PersonDao();
+		//personDao = new PersonDao();
 		convertModelDTO = new ConvertModelDTO();
 	}
 
