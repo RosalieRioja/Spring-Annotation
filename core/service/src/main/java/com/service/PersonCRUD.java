@@ -15,11 +15,12 @@ public class PersonCRUD implements CRUD<PersonDTO> {
 
 	@Autowired
 	private PersonDao personDao;
+	@Autowired
 	private ConvertModelDTO convertModelDTO;
 
 	public PersonCRUD() {
 		//personDao = new PersonDao();
-		convertModelDTO = new ConvertModelDTO();
+		//convertModelDTO = new ConvertModelDTO();
 	}
 
 	public void create(PersonDTO person) {
